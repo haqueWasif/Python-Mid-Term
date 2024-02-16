@@ -1,10 +1,18 @@
-class Hall:
+class Star_Cinema:
+    __hall_list = []
+
+    def entry_hall(self):
+        Star_Cinema.__hall_list.append(self)
+
+class Hall(Star_Cinema):
     def __init__(self, rows, cols, hall_no):
         self.__seats = {}    
         self.__show_list = []    
         self.__rows = rows
         self.__cols = cols    
         self.__hall_no = hall_no
+
+        self.entry_hall()
     
 
     def entry_show(self, id, movie_name, time):
@@ -14,16 +22,18 @@ class Hall:
         for i in range(self.__rows):
             seat_list = []
             for j in range(self.__cols):
-                seat_list.append('free')
+                seat_list.append(0)
             self.__seats[id].append(seat_list)
 
 
     def book_seats(self, id, seats_to_book):
         for row, col in seats_to_book:
-            if self.__seats[id][row][col] == 'free':
-                self.__seats[id][row][col] = 'booked'
+            if self.__seats[id][row][col] == 0:
+                self.__seats[id][row][col] = 1
                 print(f'Seat {row, col} booked for show {id}')
-            else:
+            elif row < 0 or col < 0 or row >= self.__row or col >= self.__col:
+                print(f'Seat is unavailable')
+            elif self.__seats[id][row][col] == 1:
                 print(f'Seat {row, col} is already booked !')
 
 
@@ -35,51 +45,40 @@ class Hall:
     
 
     def view_available_seats(self, id):
-        available_seats = []
-
         for i in range(self.__rows):
-            for j in range(self.__cols):
-                if self.__seats[id][i][j] == 'free':
-                    available_seats.append((i, j))
-
-        print('Available Seats:')
-        for seats in available_seats:
-            print(f'Seat {seats}')
+            print(self.__seats[id][i])
 
 
-class Star_Cinema:
-    hall_list = []
 
-    def __init__(self, rows, cols, hall_no):
-        self.hall = Hall(rows, cols, hall_no)
-        self.entry_hall()
-
-    def entry_hall(self):
-        self.hall_list.append(self.hall)
-
-
-cinema = Star_Cinema(10, 10, 1)
+cinema = Hall(10, 10, 1)
 
 while True:
     op = int(input('''1. VIEW ALL SHOW TODAY\n2. VIEW AVAILABLE SEATS\n3. BOOK TICKET\n4. Exit\nENTER OPTION: '''))
     print('\n')
 
     if op == 1:
-        for hall in cinema.hall_list:
-            hall.entry_show(111, 'Avengers', '2024:02:16')
-            hall.entry_show(222, 'Superman', '2024:02:16')
-            hall.view_show_list()
+        cinema.entry_show(111, 'Avengers', '2024:02:16')
+        cinema.entry_show(222, 'Superman', '2024:02:16')
+        cinema.view_show_list()
+            
     elif op == 2:
         id = int(input('ENTER SHOW ID: '))
 
         try:
-            for hall in cinema.hall_list:
-                hall.view_available_seats(id)
+            cinema.view_available_seats(id)
         except:
             print(f'No shows available with id: {id}')
 
     elif op == 3:
         id = int(input('ENTER SHOW ID: '))
+
+        try:
+            cinema._Hall__seats[id]
+        except:
+            print(f'No shows available with id: {id}')
+            continue
+
+        
         tickets = int(input('ENTER NUMBER OF TICKETS: '))
         
         seats_to_book = []      
@@ -90,14 +89,15 @@ while True:
             try:
                 seats_to_book.append((row, col))
                 
-                for hall in cinema.hall_list:
-                    hall.book_seats(id, seats_to_book)
+                cinema.book_seats(id, seats_to_book)
+                   
             except:
-                print('\nInvalid seat')
+                print('\nInvalid Seat')
                 print('Try again!\n')
                 continue
 
             tickets -= 1 
+
 
     elif op == 4:
         break
