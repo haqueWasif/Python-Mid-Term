@@ -26,13 +26,13 @@ class Hall(Star_Cinema):
             self.__seats[id].append(seat_list)
 
 
-    def book_seats(self, id, seats_to_book):
+    def book_seats(self, id, seats_to_book):    
         for row, col in seats_to_book:
-            if self.__seats[id][row][col] == 0:
+            if row < 0 or col < 0:
+                raise IndexError
+            elif self.__seats[id][row][col] == 0:
                 self.__seats[id][row][col] = 1
                 print(f'Seat {row, col} booked for show {id}')
-            elif row < 0 or col < 0 or row >= self.__row or col >= self.__col:
-                print(f'Seat is unavailable')
             elif self.__seats[id][row][col] == 1:
                 print(f'Seat {row, col} is already booked !')
 
@@ -81,8 +81,9 @@ while True:
         
         tickets = int(input('ENTER NUMBER OF TICKETS: '))
         
-        seats_to_book = []      
         while tickets > 0:
+            seats_to_book = []      
+
             row = int(input('ENTER SEAT ROW: '))
             col = int(input('ENTER SEAT COL: '))
 
